@@ -59,8 +59,26 @@ def export_policy(params: Any, normalizer_params: Any, out_path: str | Path) -> 
     ``obs_layout``.
     """
     # ===== TODO(student): Walk the Brax parameter tree and serialize it =====
-    raise NotImplementedError(
-        "Stage 4: Walk the Brax parameter tree and serialize it. See docs/04_training_with_brax.md")
+    layers = params["params"]
+    names = sorted(layers, key=_layer_index)
+    arrays = {"obs_mean": np.asarray(normalizer_params.mean, dtype = np.float32)
+        "obs_std": np.asarray(normalizer_params.std, dtype = np.float32)}
+    for index, name in enumerate(names):
+        arrays[f"kernel_{index}"] = np.asarray(layers[name]["kernel"], dtype = np.float32)
+        arrays[f"bias_{index}"] = np.asarray(layers[name]["bias"], dtype = np.float32)
+    arrays.update(
+        n_layers = np.int32(len(names)),
+        obs_size = np.int32(arrays["kernel_0"].shape[0])
+        action_size = np.int32(arrays[f"bias_{len(names) -  1}"].shape[0] // 2),
+        action_scale = np.float32(ACTION_SCALE),
+        default_pose = np.asarray(DEFAULT_POSE),
+        hidden_activation = np.array("swish"),
+        obs_layout = np.array(OBS_LAYOUT),
+    )
+    path = Path(out_path).resolve()
+    path.parent.mkdir(parents = True, exist_ok = True)
+    np.savez(path, **arrays)
+    return path
     # ===== end TODO =====
 
 
