@@ -27,22 +27,21 @@ import jax.numpy as jnp
 def quat_rotate(q: jax.Array, v: jax.Array) -> jax.Array:
     """Rotate v (3,) by unit wxyz q (4,); return (3,) with v's units."""
     # ===== TODO(student): Rotate a vector by a unit quaternion =====
-    raise NotImplementedError(
-        "Stage 2: Rotate a vector by a unit quaternion. See docs/02_jax_for_robotics.md")
+    w, xyz = q[0], q[1:] # takes w, xyz
+    t = 2 * jnp.cross(xyz, v) 
+    return v + w * t + jnp.cross(xyz, t)
     # ===== end TODO =====
 
 
 def quat_inv(q: jax.Array) -> jax.Array:
     """Return the inverse (4,) of a unit wxyz quaternion (dimensionless)."""
     # ===== TODO(student): Invert a unit quaternion =====
-    raise NotImplementedError(
-        "Stage 2: Invert a unit quaternion. See docs/02_jax_for_robotics.md")
+    return q * jnp.array([1.0, -1.0, -1.0, -1.0]) # preserves w, flips xyz
     # ===== end TODO =====
 
 
 def gravity_in_body_frame(q_wb: jax.Array) -> jax.Array:
     """Map unit wxyz q_wb (4,) to the body-frame down direction (3,), unitless."""
     # ===== TODO(student): Express the world gravity direction in the body frame =====
-    raise NotImplementedError(
-        "Stage 2: Express the world gravity direction in the body frame. See docs/02_jax_for_robotics.md")
+    return quat_rotate(quat_inv(q_wb), jnp.array([0.0, 0.0, -1.0]))
     # ===== end TODO =====

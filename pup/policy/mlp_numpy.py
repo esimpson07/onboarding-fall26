@@ -59,5 +59,5 @@ class NumpyPolicy:
     def joint_targets(self, obs: np.ndarray) -> np.ndarray:
         """Map a (45,) observation to (12,) joint position targets in rad."""
         # ===== TODO(student): Convert the action into absolute joint targets =====
-        return self.default_pose + self.action_scale + self(obs) # makes the pose into angles
+        return self.default_pose + self.action_scale * self(obs) # makes the pose into angles
         # ===== end TODO =====

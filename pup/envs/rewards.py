@@ -8,8 +8,8 @@ def reward_tracking_lin_vel(command: jax.Array, local_linvel: jax.Array,
                             sigma: float = 0.25) -> jax.Array:
     """Return exp(-xy error²/sigma), scalar; inputs (3,), m/s and rad/s."""
     # ===== TODO(student): Reward tracking the commanded body-frame xy velocity =====
-    raise NotImplementedError(
-        "Stage 3: Reward tracking the commanded body-frame xy velocity. See docs/03_mjx_environment.md")
+    error = jnp.sum(jnp.square(command[:2] - local_linvel[:2])) # takes vx, vy, squares then sums
+    return jnp.exp(-error / sigma) # 1.0 for perfect, approaches 0.0 when error grows
     # ===== end TODO =====
 
 
@@ -17,8 +17,8 @@ def reward_tracking_ang_vel(command: jax.Array, ang_vel: jax.Array,
                             sigma: float = 0.25) -> jax.Array:
     """Return yaw tracking score, scalar; command (3,), angular velocity (3,), rad/s."""
     # ===== TODO(student): Reward tracking the commanded yaw rate =====
-    raise NotImplementedError(
-        "Stage 3: Reward tracking the commanded yaw rate. See docs/03_mjx_environment.md")
+    error = jnp.square(command[2] - ang_vel[2]) # takes yaw and squares
+    return jnp.exp(-error / sigma) # 1.0 for perfect, approaches 0.0 when error grows
     # ===== end TODO =====
 
 
@@ -26,8 +26,9 @@ def cost_action_rate(act: jax.Array, last_act: jax.Array,
                      last_last_act: jax.Array) -> jax.Array:
     """Sum squared first and second differences of three unitless (12,) actions."""
     # ===== TODO(student): Penalize changes in actions and their first differences =====
-    raise NotImplementedError(
-        "Stage 3: Penalize changes in actions and their first differences. See docs/03_mjx_environment.md")
+    first = act - last_act
+    second = act - 2 * last_act + last_last_act
+    return jnp.sum(jnp.square(first)) + jnp.sum(jnp.square(second))
     # ===== end TODO =====
 
 
